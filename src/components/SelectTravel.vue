@@ -1,7 +1,14 @@
 <script setup>
 import axios from 'axios';
+import {ref} from "vue";
 
+const stations = ref(new Array())
 
+axios.get('http://localhost:3000/stations').then( request => {
+  for (const station of request.data){
+    stations.value.push({station.name, })
+  }
+})
 </script>
 
 <template>
