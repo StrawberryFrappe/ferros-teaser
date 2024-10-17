@@ -2,11 +2,11 @@
 import axios from 'axios';
 import {ref} from "vue";
 
-const stations = ref(new Array())
+const stations = ref([])
 
 axios.get('http://localhost:3000/stations').then( request => {
   for (const station of request.data){
-    stations.value.push({station.name, })
+    stations.value.push({name: station.name,id: station.id })
   }
 })
 </script>
@@ -15,19 +15,11 @@ axios.get('http://localhost:3000/stations').then( request => {
   <div class="tickets">
     <select name="origin" id="origin" class="tickets-select-box">
       <option value="" selected disabled>¿De donde partes?</option>
-      <option >{{station}}</option>
+      <option v-if="stations" v-for="station of stations">{{station.name}}</option>
     </select>
     <select name="destination" id="destination" class="tickets-select-box">
       <option value="" selected disabled>¿A donde vas?</option>
-      <option value="Victoria">Victoria</option>
-      <option value="PUA">PUA</option>
-      <option value="Perquenco">Perquenco</option>
-      <option value="Quillem">Quillem</option>
-      <option value="Lautaro">Lautaro</option>
-      <option value="Lautaro Centro">Lautaro Centro</option>
-      <option value="Pillanlelbun">Pillanlelbun</option>
-      <option value="Cajon">Cajon</option>
-      <option value="Temuco">Temuco</option>
+      <option v-if="stations" v-for="station of stations">{{station.name}}</option>
     </select>
     <input type="date" id="travel-date" name="date" class="tickets-select-box">
     <button class="tickets-confirm-button" onclick="window.location.href = 'select-travel.html';">Buscar</button>
