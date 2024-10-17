@@ -3,23 +3,25 @@ import axios from 'axios';
 import {ref} from "vue";
 
 const stations = ref([])
+const origin = ref('')
+const destination = ref('')
 
 axios.get('http://localhost:3000/stations').then( request => {
   for (const station of request.data){
-    stations.value.push({name: station.name,id: station.id })
+    stations.value.push({name: station['name'],id: station['id'] })
   }
 })
 </script>
 
 <template>
   <div class="tickets">
-    <select name="origin" id="origin" class="tickets-select-box">
+    <select name="origin" id="origin" class="tickets-select-box" v-on:input="console.log(origin.value)">
       <option value="" selected disabled>¿De donde partes?</option>
-      <option v-if="stations" v-for="station of stations">{{station.name}}</option>
+      <option v-if="stations" v-for="station of stations" v-on:click="console.log(station['name'].toString())">{{station['name']}}</option>
     </select>
-    <select name="destination" id="destination" class="tickets-select-box">
+    <select name="destination" id="destination" class="tickets-select-box" v-model="destination">
       <option value="" selected disabled>¿A donde vas?</option>
-      <option v-if="stations" v-for="station of stations">{{station.name}}</option>
+      <option v-if="stations" v-for="station of stations" v-show="origin.value!==station.name">{{station.name}}</option>
     </select>
     <input type="date" id="travel-date" name="date" class="tickets-select-box">
     <button class="tickets-confirm-button" onclick="window.location.href = 'select-travel.html';">Buscar</button>
