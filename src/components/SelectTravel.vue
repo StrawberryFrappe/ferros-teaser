@@ -1,29 +1,51 @@
 <script setup>
 import axios from 'axios';
-import {ref} from "vue";
+import {onMounted, ref} from "vue";
 
 const stations = ref([])
 const origin = ref('')
 const destination = ref('')
+const date = ref()
+
 
 axios.get('http://localhost:3000/stations').then( request => {
   for (const station of request.data){
     stations.value.push({name: station['name'],id: station['id'] })
   }
 })
+function updateOrigin(event) {
+  origin.value = stations.value.find(station => station.name === event.target.value);
+}
+
+function updateDestination(event) {
+  destination.value = stations.value.find(station => station.name === event.target.value);
+}
+
+function getCurrentDate() {
+  const today = new Date();
+  const yyyy = today.getFullYear();
+  const mm = String(today.getMonth() + 1).padStart(2, '0'); // Months are 0-based
+  const dd = String(today.getDate()).padStart(2, '0');
+  return `${yyyy}-${mm}-${dd}`;
+}
+
+onMounted(() => {
+  document.getElementById('travel-date').setAttribute('min', getCurrentDate());
+});
+
 </script>
 
 <template>
   <div class="tickets">
-    <select name="origin" id="origin" class="tickets-select-box" v-on:input="console.log(origin.value)">
+    <select name="origin" id="origin" class="tickets-select-box" @change="updateOrigin" >
       <option value="" selected disabled>¿De donde partes?</option>
-      <option v-if="stations" v-for="station of stations" v-on:click="console.log(station['name'].toString())">{{station['name']}}</option>
+      <option v-for="station of stations" :key="station.id" :disabled="destination===station">{{station.name}}</option>
     </select>
-    <select name="destination" id="destination" class="tickets-select-box" v-model="destination">
+    <select name="destination" id="destination" class="tickets-select-box" @change="updateDestination">
       <option value="" selected disabled>¿A donde vas?</option>
-      <option v-if="stations" v-for="station of stations" v-show="origin.value!==station.name">{{station.name}}</option>
+      <option v-for="station of stations" :key="station.id" :disabled="origin === station">{{station.name}}</option>
     </select>
-    <input type="date" id="travel-date" name="date" class="tickets-select-box">
+    <input type="date" id="travel-date" name="date" class="tickets-select-box" v-model="date" :min="getCurrentDate" >
     <button class="tickets-confirm-button" onclick="window.location.href = 'select-travel.html';">Buscar</button>
   </div>
 </template>
